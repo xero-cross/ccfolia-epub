@@ -29,11 +29,3 @@
 | `js/app.js` | 상태·이벤트·미리보기·다운로드 |
 
 EPUB은 목차 없이 한 흐름으로 이어지며, 뷰어 성능을 위해 본문을 내부적으로 여러 XHTML 파일로 나눕니다.
-
-## 로컬 미리보기
-
-`.claude/launch.json`에 PowerShell 정적 서버(`.claude/serve.ps1`, 5173 포트)가 등록되어 있습니다. 직접 실행하려면:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .claude/serve.ps1 -Port 5173
-```
