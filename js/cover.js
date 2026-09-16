@@ -7,8 +7,9 @@
 (function (global) {
   'use strict';
 
-  var W = 1600;
-  var H = 2560;
+  // 5:8 비율. 리더가 화면에 맞춰 축소하므로 이 정도면 폰·태블릿에서 충분히 선명하다
+  var W = 1000;
+  var H = 1600;
   var QUALITY = 0.9;
 
   function loadImage(file) {
@@ -112,52 +113,55 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
+    // 아래 치수는 폭 1600 기준으로 잡은 값이라 현재 폭에 맞게 비율 조정
+    var S = W / 1600;
+
     // 장식 원
     ctx.globalAlpha = 0.18;
     ctx.fillStyle = '#5eead4';
-    ctx.beginPath(); ctx.arc(W * 0.85, H * 0.18, 420, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(W * 0.12, H * 0.86, 520, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(W * 0.85, H * 0.18, 420 * S, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(W * 0.12, H * 0.86, 520 * S, 0, Math.PI * 2); ctx.fill();
     ctx.globalAlpha = 1;
 
     // 테두리 선
     ctx.strokeStyle = 'rgba(94,234,212,0.6)';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(110, 110, W - 220, H - 220);
+    ctx.lineWidth = 6 * S;
+    ctx.strokeRect(110 * S, 110 * S, W - 220 * S, H - 220 * S);
 
     var fontFamily = '"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif';
-    var fontSize = 128;
+    var fontSize = 128 * S;
     var lines;
     do {
       ctx.font = '700 ' + fontSize + 'px ' + fontFamily;
-      lines = wrapLines(ctx, title, W - 360, 6);
-      fontSize -= 8;
-    } while (lines.length > 4 && fontSize > 72);
+      lines = wrapLines(ctx, title, W - 360 * S, 6);
+      fontSize -= 8 * S;
+    } while (lines.length > 4 && fontSize > 72 * S);
 
     ctx.fillStyle = '#f0fdfa';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    var lineH = fontSize * 1.25 + 10;
+    var lineH = fontSize * 1.25 + 10 * S;
     var startY = H * 0.46 - (lines.length - 1) * lineH / 2;
     ctx.shadowColor = 'rgba(0,0,0,0.35)';
-    ctx.shadowBlur = 24;
-    ctx.shadowOffsetY = 6;
+    ctx.shadowBlur = 24 * S;
+    ctx.shadowOffsetY = 6 * S;
     for (var i = 0; i < lines.length; i++) ctx.fillText(lines[i], W / 2, startY + i * lineH);
     ctx.shadowColor = 'transparent';
 
     // 구분선
     ctx.fillStyle = '#5eead4';
-    ctx.fillRect(W / 2 - 120, startY + lines.length * lineH + 20, 240, 8);
+    ctx.fillRect(W / 2 - 120 * S, startY + lines.length * lineH + 20 * S, 240 * S, 8 * S);
 
     if (author) {
-      ctx.font = '500 64px ' + fontFamily;
+      ctx.font = '500 ' + (64 * S) + 'px ' + fontFamily;
       ctx.fillStyle = 'rgba(240,253,250,0.85)';
-      var aLines = wrapLines(ctx, author, W - 400, 2);
-      for (var j = 0; j < aLines.length; j++) ctx.fillText(aLines[j], W / 2, startY + lines.length * lineH + 130 + j * 84);
+      var aLines = wrapLines(ctx, author, W - 400 * S, 2);
+      for (var j = 0; j < aLines.length; j++) ctx.fillText(aLines[j], W / 2, startY + lines.length * lineH + 130 * S + j * 84 * S);
     }
 
-    ctx.font = '500 44px ' + fontFamily;
+    ctx.font = '500 ' + (44 * S) + 'px ' + fontFamily;
     ctx.fillStyle = 'rgba(240,253,250,0.55)';
-    ctx.fillText('TRPG SESSION LOG', W / 2, H - 260);
+    ctx.fillText('TRPG SESSION LOG', W / 2, H - 260 * S);
   }
 
   function make(o) {
