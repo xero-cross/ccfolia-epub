@@ -4,7 +4,7 @@
 
   var STORAGE_KEY = 'ccfolia-epub-opts-v1';
   var PREVIEW_BATCH = 200;
-  var DEFAULT_OPTS = { showAvatar: true, merge: false, mergeSplitOnAvatarChange: false, groupByTab: false, author: '', coverFit: 'cover' };
+  var DEFAULT_OPTS = { showAvatar: true, merge: false, mergeSplitOnAvatarChange: false, groupByTab: false, author: '', coverFit: 'cover', coverPosX: 50 };
   // 코코포리아 기본 탭 id 중 "잡담(other)"은 처음부터 보조 스타일로 둔다
   var DEFAULT_MUTED_IDS = ['other'];
 
@@ -22,6 +22,8 @@
     coverThumb: $('#cover-thumb'),
     coverRemove: $('#cover-remove'),
     coverFitGroup: $('#cover-fit-group'),
+    coverPosGroup: $('#cover-pos-group'),
+    coverPosX: $('#cover-pos-x'),
     optAvatar: $('#opt-avatar'),
     optMerge: $('#opt-merge'),
     optMergeSplit: $('#opt-merge-split'),
@@ -74,6 +76,8 @@
       }
     } catch (e) { /* ignore */ }
     if (opts.coverFit !== 'cover' && opts.coverFit !== 'contain') opts.coverFit = 'cover';
+    if (!isFinite(opts.coverPosX)) opts.coverPosX = 50;
+    opts.coverPosX = Math.min(100, Math.max(0, Math.round(opts.coverPosX)));
     return opts;
   }
 
@@ -275,7 +279,9 @@
     els.optTabs.checked = state.opts.groupByTab;
     var fitRadio = els.coverFitGroup.querySelector('input[value="' + state.opts.coverFit + '"]');
     if (fitRadio) fitRadio.checked = true;
+    els.coverPosX.value = String(state.opts.coverPosX);
     els.coverFitGroup.classList.toggle('is-hidden', !state.coverFile);
+    els.coverPosGroup.classList.toggle('is-hidden', !state.coverFile);
   }
 
   function effectiveOpts() {
@@ -308,11 +314,13 @@
     }
     els.coverRemove.hidden = !file;
     els.coverFitGroup.classList.toggle('is-hidden', !file);
+    els.coverPosGroup.classList.toggle('is-hidden', !file);
     updateCoverThumbFit();
   }
 
   function updateCoverThumbFit() {
     els.coverThumb.style.backgroundSize = state.opts.coverFit === 'contain' ? 'contain' : 'cover';
+    els.coverThumb.style.backgroundPosition = state.opts.coverPosX + '% center';
   }
 
   /* ---------- 미리보기 ---------- */
@@ -419,7 +427,8 @@
         file: state.coverFile,
         title: opts.bookTitle || state.data.title,
         author: opts.author,
-        fit: state.opts.coverFit
+        fit: state.opts.coverFit,
+        posX: state.opts.coverPosX / 100
       }).catch(function (err) {
         console.warn('표지 생성 실패, 자동 표지로 대체합니다', err);
         return window.CcfoliaCover.make({ file: null, title: opts.bookTitle || state.data.title, author: opts.author });
@@ -495,6 +504,12 @@
       els.coverInput.value = '';
     });
     els.coverRemove.addEventListener('click', function () { setCoverFile(null); });
+    els.coverPosX.addEventListener('input', function () {
+      var v = Number(els.coverPosX.value);
+      state.opts.coverPosX = isFinite(v) ? Math.min(100, Math.max(0, Math.round(v))) : 50;
+      saveOpts();
+      updateCoverThumbFit();
+    });
     els.coverFitGroup.addEventListener('change', function (e) {
       if (e.target && e.target.name === 'cover-fit') {
         state.opts.coverFit = e.target.value === 'contain' ? 'contain' : 'cover';

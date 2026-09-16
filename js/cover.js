@@ -50,18 +50,20 @@
     return 'rgb(' + Math.round(r / n) + ',' + Math.round(g / n) + ',' + Math.round(b / n) + ')';
   }
 
-  function drawImageCover(ctx, img, fit) {
+  // posX: 0(왼쪽) ~ 1(오른쪽). 채우기에서는 잘라낼 위치, 맞추기에서는 여백 안에서의 위치
+  function drawImageCover(ctx, img, fit, posX) {
     var s = dims(img);
+    var px = typeof posX === 'number' && isFinite(posX) ? Math.min(1, Math.max(0, posX)) : 0.5;
     if (fit === 'contain') {
       ctx.fillStyle = edgeColor(img);
       ctx.fillRect(0, 0, W, H);
       var scale = Math.min(W / s.w, H / s.h);
       var dw = s.w * scale, dh = s.h * scale;
-      ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      ctx.drawImage(img, (W - dw) * px, (H - dh) / 2, dw, dh);
     } else {
       var sc = Math.max(W / s.w, H / s.h);
       var cw = s.w * sc, ch = s.h * sc;
-      ctx.drawImage(img, (W - cw) / 2, (H - ch) / 2, cw, ch);
+      ctx.drawImage(img, (W - cw) * px, (H - ch) / 2, cw, ch);
     }
   }
 
@@ -164,7 +166,7 @@
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext('2d');
     var p = opts.file
-      ? loadImage(opts.file).then(function (img) { drawImageCover(ctx, img, opts.fit || 'cover'); })
+      ? loadImage(opts.file).then(function (img) { drawImageCover(ctx, img, opts.fit || 'cover', opts.posX); })
       : Promise.resolve().then(function () { drawAutoCover(ctx, opts.title || 'ccfolia log', opts.author || ''); });
     return p.then(function () {
       var dataUrl = canvas.toDataURL('image/jpeg', QUALITY);

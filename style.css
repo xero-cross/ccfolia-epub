@@ -179,6 +179,12 @@ html, body {
 .radio-group input { accent-color: var(--accent); margin: 0; }
 .radio-group small { color: var(--muted); }
 .radio-group.is-hidden { display: none; }
+.range-group { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.range-group.is-hidden { display: none; }
+.range-label { color: var(--muted); }
+.range-row { display: flex; align-items: center; gap: 6px; }
+.range-row small { color: var(--muted); white-space: nowrap; }
+.range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); margin: 0; }
 
 .toggle-row {
   display: flex;
